@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"net/http"
@@ -22,6 +23,7 @@ type (
 var routes = routeSet{
 	route{"Home", "GET", "/", home},
 	route{"Bad", "GET", "/test", bad},
+	route{"Post", "POST", "/post", post},
 }
 
 func logger(inner http.Handler, name string) http.Handler {
@@ -65,6 +67,14 @@ func home(w http.ResponseWriter, r *http.Request) {
 func bad(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(500)
 	fmt.Fprint(w, "ERROR")
+}
+
+func post(w http.ResponseWriter, r *http.Request) {
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(r.Body)
+	newStr := buf.String()
+	log.Println(newStr)
+	w.WriteHeader(200)
 }
 
 func main() {
